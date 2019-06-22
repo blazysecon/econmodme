@@ -1,21 +1,22 @@
 # econmodme
 
 <!-- badges: start -->
+[![Travis build status](https://travis-ci.org/blazysecon/econmodme.svg?branch=master)](https://travis-ci.org/blazysecon/econmodme)
 <!-- badges: end -->
 
-The goal of econmodme is to ...
+The goal of econmodme is to catalogue various utility functions for data science and the like.
 
 ## Installation
 
-You can install the released version of econmodme from [CRAN](https://CRAN.R-project.org) with:
+You can install the released version of econmodme from [github](https://github.com/blazysecon/) with:
 
 ``` r
-install.packages("econmodme")
+devtools::install_github("blazysecon/econmodme")
 ```
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+This is a basic example:
 
 ``` r
 library(econmodme)
