@@ -7,8 +7,11 @@
 #'
 #' @export
 #'
+#' @importFrom DT formatCurrency
+#' @import dplyr
+#'
 #' @examples
-#' table %>% add_commas("n_sku")
+#' \dontrun{table %>% add_commas("n_sku")}
 add_commas <- function(table, columns = c('Raw SKUs')) {
     table %>%
         formatCurrency(
@@ -27,8 +30,10 @@ add_commas <- function(table, columns = c('Raw SKUs')) {
 #'
 #' @export
 #'
+#' @importFrom DT datatable
+#'
 #' @examples
-#' df %>% plot_table_btns()
+#' \dontrun{df %>% plot_table_btns()}
 plot_table_btns <- function(df, page_length = 20) {
     df %>%
         datatable(
@@ -53,9 +58,9 @@ plot_table_btns <- function(df, page_length = 20) {
 #' @export
 #'
 #' @examples
-#' df %>% mutate(myvar = empty_to_na(myvar))
+#' \dontrun{df %>% mutate(myvar = empty_to_na(myvar))}
 #'
-#' df %>% mutate_if(is.character, funs(ifelse(. == "", NA, .)))
+#' \dontrun{df %>% mutate_if(is.character, funs(ifelse(. == "", NA, .)))}
 empty_to_na <-
     function(input)
         ifelse(test = input == "", yes = NA, no = input)
@@ -70,7 +75,7 @@ empty_to_na <-
 #' @export
 #'
 #' @examples
-#' df %>% mutate(x = trim(x))
+#' \dontrun{df %>% mutate(x = trim(x))}
 trim <- function (x) gsub("^\\s+|\\s+$", "", x)
 
 
@@ -83,7 +88,7 @@ trim <- function (x) gsub("^\\s+|\\s+$", "", x)
 #' @export
 #'
 #' @examples
-#' df %>% mutate(x = remove_special_symbols(x))
+#' \dontrun{df %>% mutate(x = remove_special_symbols(x))}
 remove_special_symbols <- function (x) {
     x <- iconv(enc2utf8(x),sub="byte")
     x <- gsub("\xe9|<e9>", "e", x)
@@ -119,7 +124,7 @@ remove_special_symbols <- function (x) {
 #' @export
 #'
 #' @examples
-#' df %>% mutate(z = x %+na% y)
+#' \dontrun{x %+na% y}
 `%+na%` <-
     function(x, y) {
         ifelse(is.na(x), y, ifelse(is.na(y), x, x + y))
@@ -138,7 +143,7 @@ remove_special_symbols <- function (x) {
 #' @export
 #'
 #' @examples
-#' df %>% mutate(z = x %+ana% y)
+#' \dontrun{x %+ana% y}
 `%+ana%` <-
     function(x, y) {
         ifelse(is.na(x), y, ifelse(is.na(y), x, (x + y) / 2))
@@ -154,9 +159,10 @@ remove_special_symbols <- function (x) {
 #' @return numeric
 #'
 #' @export
+#' @importFrom stats median sd
 #'
 #' @examples
-#' df %>% sumstats(TRUE, 12)
+#' sumstats(df, TRUE, 12)
 sumstats = function(df, detailed = FALSE, text_len = 6) {
     obs.k = function(x) { # number of nonmissing observations
         if (is.numeric(x))
