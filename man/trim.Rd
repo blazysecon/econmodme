@@ -16,5 +16,6 @@ Text field
 Remove leading or trailing whitespace
 }
 \examples{
-\dontrun{df \%>\% mutate(x = trim(x))}
+load(system.file("extdata", "string_vector.rda", package = "econmodme"))
+trim(string_vector)
 }

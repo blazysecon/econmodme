@@ -58,7 +58,8 @@ plot_table_btns <- function(df, page_length = 20) {
 #' @export
 #'
 #' @examples
-#' \dontrun{df %>% mutate(myvar = empty_to_na(myvar))}
+#' load(system.file("extdata", "string_vector.rda", package = "econmodme"))
+#' empty_to_na(string_vector)
 #'
 #' \dontrun{df %>% mutate_if(is.character, funs(ifelse(. == "", NA, .)))}
 empty_to_na <-
@@ -75,7 +76,8 @@ empty_to_na <-
 #' @export
 #'
 #' @examples
-#' \dontrun{df %>% mutate(x = trim(x))}
+#' load(system.file("extdata", "string_vector.rda", package = "econmodme"))
+#' trim(string_vector)
 trim <- function (x) gsub("^\\s+|\\s+$", "", x)
 
 
@@ -88,7 +90,8 @@ trim <- function (x) gsub("^\\s+|\\s+$", "", x)
 #' @export
 #'
 #' @examples
-#' \dontrun{df %>% mutate(x = remove_special_symbols(x))}
+#' load(system.file("extdata", "string_vector.rda", package = "econmodme"))
+#' remove_special_symbols(string_vector)
 remove_special_symbols <- function (x) {
     x <- iconv(enc2utf8(x),sub="byte")
     x <- gsub("\xe9|<e9>", "e", x)
@@ -124,7 +127,7 @@ remove_special_symbols <- function (x) {
 #' @export
 #'
 #' @examples
-#' \dontrun{x %+na% y}
+#' x %+na% y
 `%+na%` <-
     function(x, y) {
         ifelse(is.na(x), y, ifelse(is.na(y), x, x + y))
@@ -143,7 +146,7 @@ remove_special_symbols <- function (x) {
 #' @export
 #'
 #' @examples
-#' \dontrun{x %+ana% y}
+#' x %+ana% y
 `%+ana%` <-
     function(x, y) {
         ifelse(is.na(x), y, ifelse(is.na(y), x, (x + y) / 2))

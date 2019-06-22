@@ -18,5 +18,5 @@ numeric
 Take an average of variables which are nonmissing
 }
 \examples{
-\dontrun{x \%+ana\% y}
+x \%+ana\% y
 }

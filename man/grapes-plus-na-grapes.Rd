@@ -18,5 +18,5 @@ numeric
 Add variables which are nonmissing
 }
 \examples{
-\dontrun{x \%+na\% y}
+x \%+na\% y
 }

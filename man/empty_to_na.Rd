@@ -16,7 +16,8 @@ Text field
 Convert empty string values "" to NA
 }
 \examples{
-\dontrun{df \%>\% mutate(myvar = empty_to_na(myvar))}
+load(system.file("extdata", "string_vector.rda", package = "econmodme"))
+empty_to_na(string_vector)
 
 \dontrun{df \%>\% mutate_if(is.character, funs(ifelse(. == "", NA, .)))}
 }

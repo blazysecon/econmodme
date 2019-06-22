@@ -16,5 +16,6 @@ Text field
 Remove special symbols
 }
 \examples{
-\dontrun{df \%>\% mutate(x = remove_special_symbols(x))}
+load(system.file("extdata", "string_vector.rda", package = "econmodme"))
+remove_special_symbols(string_vector)
 }
