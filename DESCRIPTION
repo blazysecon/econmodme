@@ -14,7 +14,9 @@ LazyData: true
 Imports: 
     dplyr,
     DT,
-    magrittr
+    magrittr,
+		stringr,
+		tidyr
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1.9000
 Depends: 

@@ -1,3 +1,95 @@
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
+
+#' Add industry and sector columns to Passport industry tree
+#'
+#' @param df data frame with Euromonitor Passport Tree with the following columns: categoryid, productname, categoryparentid, indentlevel, projectid, islowestlevel
+#' @return data frame with the following extra columns: industryid, industry, sectorlev1id, sectorlev1
+#'
+#' @export
+#' @import dplyr
+#' @importFrom stats na.omit
+#' @importFrom stringr str_replace
+#' @importFrom tidyr gather
+#'
+#' @examples
+#' \dontrun{df %>% get_extended_tree()}
+get_extended_tree <- function(df) {
+
+  df_tree_pairs <- df %>%
+    dplyr::select(.data$categoryid, .data$categoryparentid, .data$projectid) %>%
+    na.omit()
+
+  df_tree_names <- df %>%
+      select(.data$projectid, .data$categoryid, .data$productname) %>%
+      distinct()
+
+  if (any(duplicated(df_tree_pairs %>% dplyr::select(.data$categoryid, .data$projectid)))) stop('[df_tree] should have no duplicates in [categoryid, projectid]')
+
+  # This assumes that tree has no duplicates and no exceptions
+  df_tree_wide <- df %>%
+      dplyr::filter(.data$indentlevel == 0) %>%
+      dplyr::select(prod_lev0 = .data$categoryid) %>%
+      left_join(df_tree_pairs %>% dplyr::rename(prod_lev0 = .data$categoryparentid, prod_lev1 = .data$categoryid)) %>%
+      left_join(df_tree_pairs %>% dplyr::rename(prod_lev1 = .data$categoryparentid, prod_lev2 = .data$categoryid)) %>%
+      left_join(df_tree_pairs %>% dplyr::rename(prod_lev2 = .data$categoryparentid, prod_lev3 = .data$categoryid)) %>%
+      left_join(df_tree_pairs %>% dplyr::rename(prod_lev3 = .data$categoryparentid, prod_lev4 = .data$categoryid)) %>%
+      left_join(df_tree_pairs %>% dplyr::rename(prod_lev4 = .data$categoryparentid, prod_lev5 = .data$categoryid)) %>%
+      left_join(df_tree_pairs %>% dplyr::rename(prod_lev5 = .data$categoryparentid, prod_lev6 = .data$categoryid)) %>%
+      left_join(df_tree_pairs %>% dplyr::rename(prod_lev6 = .data$categoryparentid, prod_lev7 = .data$categoryid))
+  # Identify lowest level categories
+  df_tree_wide$category_ll <- NA
+  for (lev in seq_len(6)) {
+      df_tree_wide <- df_tree_wide %>%
+        dplyr::mutate(category_ll=ifelse(is.na(.data$category_ll) &
+                                        !is.na(get(paste0("prod_lev", lev))) &
+                                        is.na(get(paste0("prod_lev", lev+1))),
+                                    get(paste0("prod_lev", lev)),
+                                    .data$category_ll))
+  }
+  df_tree_wide <- df_tree_wide %>%
+      dplyr::mutate(category_ll=ifelse(is.na(.data$category_ll),
+                                       .data$prod_lev6, .data$category_ll))
+
+  # Create long category tree
+  temp_df_tree_long <- df_tree_wide %>%
+      tidyr::gather(.data$level, .data$categoryid, -.data$category_ll, -.data$projectid) %>%
+      mutate(level = as.integer(str_replace(.data$level, "prod_lev", ""))) %>%
+      dplyr::select(.data$categoryid, .data$level, .data$category_ll, .data$projectid) %>%
+      dplyr::filter(!is.na(.data$categoryid)) %>%
+      left_join(df_tree_wide %>% dplyr::select(.data$category_ll, .data$projectid, industryid = .data$prod_lev0)) %>%
+      left_join(df_tree_names %>% dplyr::select(industryid = .data$categoryid,
+                                                .data$projectid, industry = .data$productname))
+
+  temp_df_tree_long_p2 <- temp_df_tree_long %>%
+    dplyr::filter(.data$level>0) %>%
+      left_join(df_tree_wide %>% dplyr::select(.data$category_ll, .data$projectid, sectorlev1id = .data$prod_lev1)) %>%
+      left_join(df_tree_names %>% dplyr::select(sectorlev1id = .data$categoryid, .data$projectid,
+                                                sectorlev1 = .data$productname))
+
+  df_tree_long <- temp_df_tree_long %>%
+    dplyr::filter(.data$level==0) %>%
+    bind_rows(temp_df_tree_long_p2)
+
+  # Create extended category parent relational file
+  df_tree_ext <- df %>%
+    inner_join(df_tree_long %>%
+                dplyr::select(.data$industry, .data$industryid, .data$sectorlev1id,
+                              .data$projectid, .data$categoryid, .data$sectorlev1) %>%
+                distinct(), by = c("categoryid", "projectid")) %>%
+    dplyr::select(.data$categoryid, .data$projectid, .data$productname,
+                  .data$categoryparentid, .data$indentlevel, .data$industryid,
+                  .data$industry, .data$sectorlev1id, .data$sectorlev1, .data$islowestlevel)
+  # # Add "Not in Passport" and "Not Sure" cases
+  # df_tree_ext[nrow(df_tree_ext) + 1,] = list(132, -2L, -2L, "Not in Passport",
+  #                                            0L, -2L, "Not in Passport", -2L, "Not in Passport", 1)
+  # df_tree_ext[nrow(df_tree_ext) + 1,] = list(132, -1L, -1L, "Not Sure",
+  #                                            0L, -1L, "Not Sure", -1L, "Not Sure", 1)
+
+  df_tree_ext
+
+}
+
+
 #' Add comma formatting to DT::datatable columns
 #'
 #' @param table DT::datatable
