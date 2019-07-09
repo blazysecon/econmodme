@@ -1,6 +1,6 @@
 Package: econmodme
 Title: Personal Data Science Functions
-Version: 0.0.1
+Version: 0.0.2
 Authors@R: 
     person(given = "Giedrius",
            family = "Blazys",

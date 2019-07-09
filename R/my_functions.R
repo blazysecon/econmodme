@@ -52,7 +52,7 @@ get_extended_tree <- function(df) {
 
   # Create long category tree
   temp_df_tree_long <- df_tree_wide %>%
-      tidyr::gather(.data$level, .data$categoryid, -.data$category_ll, -.data$projectid) %>%
+      tidyr::gather("level", "categoryid", -.data$category_ll, -.data$projectid) %>%
       mutate(level = as.integer(str_replace(.data$level, "prod_lev", ""))) %>%
       dplyr::select(.data$categoryid, .data$level, .data$category_ll, .data$projectid) %>%
       dplyr::filter(!is.na(.data$categoryid)) %>%
